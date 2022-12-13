@@ -37,16 +37,9 @@ func Init(pipePath string, service string) *Client {
 // The true returned type can be int32, int64, string, struct (object), list of struct (objects) or JSON
 func (c *Client) Call(funcname string, params ...interface{}) (interface{}, error) {
 	// TODO: use reflection to compose requests and parse results.
-	var unixAddr *net.UnixAddr
-	unixAddr, err := net.ResolveUnixAddr("unix", c.pipePath)
+	conn, err := net.Dial("tcp", "127.0.0.1:8083")
 	if err != nil {
-		err := fmt.Errorf("failed to resolve unix addr when calling rpc : %v", err)
-		return nil, err
-	}
-
-	conn, err := net.DialUnix("unix", nil, unixAddr)
-	if err != nil {
-		err := fmt.Errorf("failed to dial unix when calling rpc : %v", err)
+		err := fmt.Errorf("failed to dial when calling rpc : %v", err)
 		return nil, err
 	}
 	defer conn.Close()
